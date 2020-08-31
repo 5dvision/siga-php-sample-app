@@ -12,7 +12,18 @@
 		"name": "Kullar Kert",
 		"email": "kullar.kert@gmail.com"
 	}],
+	"repositories": [
+        {
+            "type": "path",
+            "url": "C:/xampp/htdocs/repos/5dvision/siga-php-client",
+            "options": {
+                "symlink": true
+            }
+        }
+	],
+	"minimum-stability": "dev",
 	"require": {
-		"php": "^7.2.5"
+		"php": "^7.2.5",
+		"5dvision/siga-php-client": "dev-master"
 	}
 }

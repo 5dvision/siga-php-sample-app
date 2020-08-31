@@ -4,6 +4,16 @@ require __DIR__.'/vendor/autoload.php';
 require __DIR__.'/helpers/functions.php';
 require __DIR__.'/config.php';
 
+session_start();
+
+$sigaClient = SigaClient\Client::Instance([
+    'url' => SIGA_ENDPOINT,
+    'client' => SIGA_CLIENT_NAME,
+    'service' => SIGA_SERVICE_NAME,
+    'uuid' => SIGA_UUID,
+    'secret' => SIGA_SIGN_SECRET,
+]);
+
 /**
  * Load action template
  *
@@ -24,9 +34,22 @@ function loadActionTemplate($action)
     require(__DIR__.'/templates/footer.php');
 }
 
+
+
+/* Parse acts */
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if ($_POST['act'] === 'create_new_doc') {
-        loadActionTemplate($_POST['act']);
+    if ($_POST['act'] === 'prepare_remote_signing') {
+        dump('siin');
+        dump($_POST);
+    } elseif ($_POST['action'] === 'create_new_doc') {
+        loadActionTemplate($_POST['action']);
+        
+        if ($_POST['conversionType'] === 'ASIC') {
+            $sigaClient->createAsicContainer();
+        } elseif ($_POST['conversionType'] === 'HASHCODE') {
+            $sigaClient->createHashcodeContainer();
+        }
     }
 } else {
     loadActionTemplate('default');

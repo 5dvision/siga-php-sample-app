@@ -1,7 +1,17 @@
-.footer .logo{
-	max-width: 170px;
+.footer .logo {
+    max-width: 170px;
 }
 
-.btn-sign img{
-	max-width: 100px !important;
+.btn-sign img {
+    max-width: 100px !important;
+}
+
+#spanner {
+	display:none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+	margin-left:-13rem;
+	margin-top:-10rem;
+    z-index: 1000;
 }
