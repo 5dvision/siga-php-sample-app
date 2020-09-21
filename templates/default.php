@@ -11,9 +11,9 @@
 					</div>
 					<div class="form-group">
 						<label for="conversionType">Choose container conversion type</label>
-						<select class="form-control" id="containerType">
-							<option value="ASIC">ASIC</option>
-							<option value="HASHCODE" disabled>HASHCODE</option>
+						<select class="form-control" name="containerType" id="containerType">
+							<option value="HASHCODE">HASHCODE</option>
+							<option value="ASIC" disabled>ASIC</option>
 						</select>
 					</div>	
 				</div>

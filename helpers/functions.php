@@ -16,6 +16,41 @@ function showError($e)
 }
 
 /**
+ * Upload files to server
+ *
+ * @return array Uploaded files array
+ */
+function uploadFile()
+{
+    $input_field_name = 'datafile';
+
+    //Check for upload errors
+    if (($_FILES[$input_field_name]['error'] > 0)) {
+        throw getUploadErrorException($_FILES[$input_field_name]['error']);
+    }
+
+    //Upload file
+    $filename = $_FILES[$input_field_name]['name'];
+    $ext = pathinfo($filename, PATHINFO_EXTENSION);
+    $uFilename = uniqid('SiGa', true).'.'.$ext;
+    $destination = UPLOAD_DIR .'/'. $uFilename;
+
+    if (!move_uploaded_file($_FILES[$input_field_name]['tmp_name'], $destination)) {
+        throw new Exception('There was a problem saving the uploaded file to disk.');
+    }
+
+    $files[] = [
+        'name' => $_FILES[$input_field_name]['name'],
+        'path' => $destination,
+        'data' => file_get_contents($destination),
+        'mime' => $_FILES[$input_field_name]['type'],
+        'size' => $_FILES[$input_field_name]['size'],
+    ];
+
+    return $files;
+}
+
+/**
  * Get upload error exception
  *
  * @param $code Upload error code.
@@ -60,14 +95,15 @@ function getUploadErrorException($code)
  *
  * @param int $bytes Bytes
  * @param integer $decimals Decimal places
- * 
+ *
  * @return string Human readable file size
  */
-function human_filesize($bytes, $decimals = 2) {
-	$sz = 'BKMGTP';
-	$factor = floor((strlen($bytes) - 1) / 3);
-	return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . @$sz[$factor];
-  }
+function human_filesize($bytes, $decimals = 2)
+{
+    $sz = 'BKMGTP';
+    $factor = floor((strlen($bytes) - 1) / 3);
+    return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . @$sz[$factor];
+}
 
 /**
  * Dump ouput

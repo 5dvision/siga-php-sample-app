@@ -42,29 +42,58 @@ var SiGa = {
     },
 
     addIDCardSignature: function () {
+        SiGa.showSpinner();
         $('#errorMessage').hide();
-        self.showSpinner();
 
         var hwcCertificate = null;
-        var cert = null;
+        var signatureId = null;
+        var language = 'en';
 
         window.hwcrypto.getCertificate({
-            lang: 'et'
+            lang: language
         }).then(function (certificate) {
-            cert = Array.prototype.slice.call(certificate.encoded);
             hwcCertificate = certificate;
 
-            console.log(cert);
-			console.log(hwcCertificate);
+            const formData = new FormData();
 
-			$.post('index.php', { action: "prepare_remote_signing", certificate: cert });
+            formData.append('action', 'prepare_signing');
+            formData.append('certificateHex', hwcCertificate.hex);
 
+            return axios.post('index.php', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+        }).then(function (response) {
+            //console.log(response.data);
 
-        }, function (reason) {
-            self.hideSpinner();
-            self.showError(reason);
+            signatureId = response.data.generatedSignatureId;
+
+            var dataToSignHash = new Uint8Array(base64js.toByteArray(response.data.dataToSignHash));
+
+            return window.hwcrypto.sign(hwcCertificate, {
+                type: response.data.digestAlgorithm,
+                value: dataToSignHash
+            }, {
+                lang: language
+            });
+        }).then(function (signature) {
+            const formData = new FormData();
+
+            formData.append('action', 'finalize_signing');
+            formData.append('signatureId', signatureId);
+            formData.append('signatureHex', signature.hex);
+
+            return axios.post('index.php', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+        }).then(function () {
+            SiGa.hideSpinner();
+        }).catch(function (error) {
+            console.log(error);
+            SiGa.hideSpinner();
         });
-
-        hideSpinner();
     }
 }

@@ -16,7 +16,7 @@
 							<tr>
 								<td><?=$file['name']?></td>
 								<td><?=$file['mime']?></td>
-								<td><?=$file['size']?></td>
+								<td><?=human_filesize($file['size'])?></td>
 							</tr>
 						<?php endforeach;?>
 					</tbody>
