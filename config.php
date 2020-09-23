@@ -35,4 +35,4 @@ define('SIGA_SIGN_SECRET', '');
 /**
  * Upload directory where the uploaded files are stored
  */
-define('UPLOAD_DIR', __DIR__ . '/uploads');
+define('UPLOAD_DIR', __DIR__ . DIRECTORY_SEPARATOR . 'uploads');

@@ -15,6 +15,23 @@ function showError($e)
     return '<p class="alert alert-danger">' . $message . '</p>';
 }
 
+function getUploadDirectory()
+{
+    return UPLOAD_DIR;
+}
+
+function getContainerName($containerId, $files)
+{
+    //lets find container name from first uploaded file
+    $containerName = explode('.', array_keys($files)[0])[0];
+    
+    if (!$containerName) {
+        $containerName = $containerId;
+    }
+
+    return $containerName.'.asice';
+}
+
 /**
  * Upload files to server
  *
@@ -33,7 +50,7 @@ function uploadFile()
     $filename = $_FILES[$input_field_name]['name'];
     $ext = pathinfo($filename, PATHINFO_EXTENSION);
     $uFilename = uniqid('SiGa', true).'.'.$ext;
-    $destination = UPLOAD_DIR .'/'. $uFilename;
+    $destination = getUploadDirectory() .'/'. $uFilename;
 
     if (!move_uploaded_file($_FILES[$input_field_name]['tmp_name'], $destination)) {
         throw new Exception('There was a problem saving the uploaded file to disk.');
@@ -48,6 +65,22 @@ function uploadFile()
     ];
 
     return $files;
+}
+
+/**
+ * Delete uploaded files
+ *
+ * @param array $files Files with path
+ *
+ * @return void
+ */
+function deleteUploadedFiles(array $files)
+{
+    foreach ($files as $path) {
+        if (file_exists($path)) {
+            unlink($path);
+        }
+    }
 }
 
 /**

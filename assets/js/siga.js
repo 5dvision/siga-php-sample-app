@@ -66,7 +66,6 @@ var SiGa = {
             });
         }).then(function (response) {
             //console.log(response.data);
-
             signatureId = response.data.generatedSignatureId;
 
             var dataToSignHash = new Uint8Array(base64js.toByteArray(response.data.dataToSignHash));
@@ -91,6 +90,7 @@ var SiGa = {
             });
         }).then(function () {
             SiGa.hideSpinner();
+            $('#download-signed-file').removeClass('d-none');
         }).catch(function (error) {
             console.log(error);
             SiGa.hideSpinner();

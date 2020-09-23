@@ -29,6 +29,8 @@
 				<button type="button" class="btn btn-sign bg-light border">
 					<img src="assets/img/eid_mobiilid_mark.svg" />
 				</button>
+
+				<a href="index.php?action=download_container" target="_blank" id="download-signed-file" class="btn btn-primary float-right d-none">Download Signed File</a>
 			</div>
 		</div>
 	</div>

@@ -56,33 +56,62 @@ function loadFooter()
 
 
 /* Parse acts */
+if ($_GET['action'] == 'download_container') {
+    try {
+        $pathToFile = getUploadDirectory(). DIRECTORY_SEPARATOR . $_SESSION['containerId'].'.asice';
+        
+        if (!file_exists($pathToFile)) {
+            throw new Exception("Signed file not found!");
+        }
 
+        $containerName = getContainerName($_SESSION['containerId'], $_SESSION['containerFiles']);
+
+        header("Content-Disposition: attachment; filename=\"" . $containerName . "\"");
+        header("Content-Transfer-Encoding: Binary");
+        header('Content-Type: application/force-download');
+        header('Content-Length: ' . filesize($pathToFile));
+        header('Connection: close');
+        readfile($pathToFile);
+        die();
+    } catch (Exception $e) {
+        loadHeader();
+        echo showError($e);
+        loadFooter();
+        exit;
+    }
+}
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if ($_POST['action'] === 'create_new_doc') {
+    $action = $_POST['action'];
+
+    if ($action === 'create_new_doc') {
         loadHeader();
         try {
             $files = uploadFile();
-            
-            loadContentTemplate($_POST['action'], ['files'=> $files]);
+
+            loadContentTemplate($action, ['files'=> $files]);
             
             $_SESSION['containerId'] = $sigaClient->createContainer($_POST['containerType'], $files);
+            $_SESSION['containerFiles'] = array_column($files, 'path', 'name');
         } catch (Exception $e) {
             echo showError($e);
         }
         loadFooter();
-    } elseif ($_POST['action'] === 'prepare_signing') {
+    } elseif ($action === 'prepare_signing') {
         try {
             echo $sigaClient->prepareSigning($_POST['certificateHex']);
         } catch (Exception $e) {
+            deleteUploadedFiles($_SESSION['containerFiles']);
             echo showError($e);
         }
-    } elseif ($_POST['action'] === 'finalize_signing') {
+    } elseif ($action === 'finalize_signing') {
         try {
-            echo $sigaClient->finalizeSigning($_POST['signatureId'], $_POST['signatureHex']);
+            echo $sigaClient->finalizeSigning($_POST['signatureId'], $_POST['signatureHex'], $_SESSION['containerFiles']);
         } catch (Exception $e) {
             echo showError($e);
         }
+        deleteUploadedFiles($_SESSION['containerFiles']);
     }
 } else {
+    unset($_SESSION);
     loadActionTemplate('default');
 }
