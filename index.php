@@ -98,18 +98,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         loadFooter();
     } elseif ($action === 'prepare_signing') {
         try {
-            echo $sigaClient->prepareSigning($_POST['certificateHex']);
+            header('Content-Type: application/json');
+            echo json_encode($sigaClient->prepareSigning($_POST['certificateHex']));
         } catch (Exception $e) {
             deleteUploadedFiles($_SESSION['containerFiles']);
             echo showError($e);
         }
     } elseif ($action === 'finalize_signing') {
         try {
-            echo $sigaClient->finalizeSigning($_POST['signatureId'], $_POST['signatureHex'], $_SESSION['containerFiles']);
+            $sigaClient->finalizeSigning($_POST['signatureId'], $_POST['signatureHex'], $_SESSION['containerFiles']);
         } catch (Exception $e) {
             echo showError($e);
         }
         deleteUploadedFiles($_SESSION['containerFiles']);
+    } elseif ($action === 'mid_sign') {
+        require_once('actions/mid_sign.php');
+    } elseif ($action === 'mid_status') {
+        require_once('actions/mid_status.php');
+    } elseif ($action === 'mid_finalize_sign') {
+        require_once('actions/mid_finalize_sign.php');
     }
 } else {
     unset($_SESSION);

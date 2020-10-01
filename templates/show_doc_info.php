@@ -26,7 +26,7 @@
 				<button type="button" class="btn btn-sign bg-light border" onclick="SiGa.addIDCardSignature();">
 					<img src="assets/img/eid_idkaart_mark.svg" />
 				</button>
-				<button type="button" class="btn btn-sign bg-light border">
+				<button type="button" class="btn btn-sign bg-light border" data-toggle="modal" data-target="#mobileSignModal">
 					<img src="assets/img/eid_mobiilid_mark.svg" />
 				</button>
 
@@ -35,3 +35,6 @@
 		</div>
 	</div>
 </div>
+<?php
+include 'mobile_sign_modal.php';
+?>

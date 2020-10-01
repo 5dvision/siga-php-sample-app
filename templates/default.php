@@ -10,7 +10,7 @@
 						<input type="file" name="datafile" class="form-control-file">
 					</div>
 					<div class="form-group">
-						<label for="conversionType">Choose container conversion type</label>
+						<label for="containerType">Choose container conversion type</label>
 						<select class="form-control" name="containerType" id="containerType">
 							<option value="HASHCODE">HASHCODE</option>
 							<option value="ASIC" disabled>ASIC</option>

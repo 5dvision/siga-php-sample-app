@@ -95,5 +95,105 @@ var SiGa = {
             console.log(error);
             SiGa.hideSpinner();
         });
+    },
+
+    startMobileIdSign: function () {
+        $('#mobileSignErrorContainer').hide();
+
+        var phoneNo = $('#mid_phone').val();
+        var idCode = $('#mid_idCode').val();
+
+        if (!phoneNo) {
+            $('#mobileSignErrorContainer')
+                .html('Phone number is required!')
+                .show();
+
+            return false;
+        }
+        if (!idCode) {
+            $('#mobileSignErrorContainer')
+                .html('Social security number is required!')
+                .show();
+            return false;
+        }
+
+        const formData = new FormData();
+
+        formData.append('action', 'mid_sign');
+        formData.append('phone', phoneNo);
+        formData.append('idcode', idCode);
+        formData.append('containerType', $('#containerType').val());
+
+        axios.post('index.php', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        }).then(function (response) {
+            var challengeId = response.data.challengeId;
+            var generatedSignatureId = response.data.generatedSignatureId;
+
+            $('#challangeId').text(challengeId);
+
+            $('#mobileSignModalHeader, #mobileSignModalFooter, #phoneAsking').hide();
+            $('#showChallange').show();
+
+            //lets create interval for asking code update and finishing signing
+            var midStatus;
+            var intervalId = setInterval(function () {
+                const formData = new FormData();
+
+                formData.append('action', 'mid_status');
+                formData.append('signatureId', generatedSignatureId);
+
+                axios.post('index.php', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                }).then(function (response) {
+                    midStatus = response.data.midStatus;
+
+                    if (midStatus !== 'OUTSTANDING_TRANSACTION') {
+                        clearInterval(intervalId);
+                    }
+
+                    if (midStatus === 'SIGNATURE') {
+                        const formData = new FormData();
+
+                        formData.append('action', 'mid_finalize_sign');
+
+                        axios.post('index.php', formData, {
+                            headers: {
+                                'Content-Type': 'multipart/form-data'
+                            }
+                        }).then(function (response) {
+                            $('#mobileSignModal').modal('hide');
+                            $('#download-signed-file').removeClass('d-none');
+
+                        }).catch(function (error) {
+                            clearInterval(intervalId);
+                            $('#mobileSignErrorContainer')
+                                .html(error.response.data.errorMessage)
+                                .show();
+                            return false;
+                        });
+
+
+
+                    }
+                }).catch(function (error) {
+                    clearInterval(intervalId);
+                    $('#mobileSignErrorContainer')
+                        .html(error.response.data.errorMessage)
+                        .show();
+                    return false;
+                });
+            }, 3000);
+
+        }).catch(function (error) {
+            $('#mobileSignErrorContainer')
+                .html('There was an error performing AJAX request to initiate MID signing: <b>' + error.response.status + '-' + error.response.data.errorMessage + '</b>')
+                .show();
+        });
+
     }
 }
