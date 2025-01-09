@@ -15,15 +15,16 @@
 	"repositories": [
         {
             "type": "path",
-            "url": "C:/xampp/htdocs/repos/5dvision/siga-php-client",
+            "url": "../siga-php-client",
             "options": {
                 "symlink": true
             }
         }
 	],
-	"minimum-stability": "dev",
+	"minimum-stability": "stable",
 	"require": {
-		"php": "^7.2.5",
+		"php": "^7.2.5 || ^8.0",
+        "ext-json": "*",
 		"5dvision/siga-php-client": "dev-master"
-	}
+    }
 }

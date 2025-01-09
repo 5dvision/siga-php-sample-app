@@ -1,4 +1,9 @@
 <?php
+
+/**
+ * @var \SigaClient\SigaClient $sigaClient
+ */
+
 header('Content-Type: application/json');
 
 try {
@@ -10,7 +15,7 @@ try {
     ];
 
     echo json_encode($sigaClient->prepareMobileSigning($_arrRequestParams));
-} catch (Exception $e) {
+} catch (Throwable $e) {
     http_response_code($e->getCode());
     echo json_encode(['errorMessage' => $e->getMessage()]);
 }
