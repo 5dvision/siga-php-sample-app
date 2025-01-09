@@ -3,7 +3,7 @@
 /**
  * Generates bootrapt html error
  *
- * @param $e The Exception that the error is based on.
+ * @param \Throwable $e The Exception that the error is based on.
  *
  * @return string Html error message
  */
@@ -11,7 +11,7 @@ function showError($e)
 {
     $code = $e->getCode();
     $message = ($code ? $code . ': ' : '') . $e->getMessage();
-    
+
     return '<p class="alert alert-danger">' . $message . '</p>';
 }
 
@@ -24,7 +24,7 @@ function getContainerName($containerId, $files)
 {
     //lets find container name from first uploaded file
     $containerName = explode('.', array_keys($files)[0])[0];
-    
+
     if (!$containerName) {
         $containerName = $containerId;
     }
@@ -36,6 +36,8 @@ function getContainerName($containerId, $files)
  * Upload files to server
  *
  * @return array Uploaded files array
+ *
+ * @throws \Exception
  */
 function uploadFile()
 {
@@ -86,7 +88,7 @@ function deleteUploadedFiles(array $files)
 /**
  * Get upload error exception
  *
- * @param $code Upload error code.
+ * @param int $code Upload error code.
  *
  * @return Exception Corresponding exception.
  */
@@ -134,12 +136,12 @@ function getUploadErrorException($code)
 function human_filesize($bytes, $decimals = 2)
 {
     $sz = 'BKMGTP';
-    $factor = floor((strlen($bytes) - 1) / 3);
+    $factor = floor((strlen($bytes) - 1) / 3) ?: 0;
     return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . @$sz[$factor];
 }
 
 /**
- * Dump ouput
+ * Dump output
  *
  * @param mixed $input Input to print out
  *

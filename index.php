@@ -43,7 +43,7 @@ function loadContentTemplate(string $action, array $params = [])
     extract($params);
 
     $allowedActions = ['default','create_new_doc', 'show_doc_info'];
-    
+
     if (in_array($action, $allowedActions)) {
         include(__DIR__.'/templates/'.strtolower($action).'.php');
     }
@@ -59,7 +59,7 @@ function loadFooter()
 if ($_GET['action'] == 'download_container') {
     try {
         $pathToFile = getUploadDirectory(). DIRECTORY_SEPARATOR . $_SESSION['containerId'].'.asice';
-        
+
         if (!file_exists($pathToFile)) {
             throw new Exception("Signed file not found!");
         }
@@ -89,10 +89,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $files = uploadFile();
 
             loadContentTemplate($action, ['files'=> $files]);
-            
+
             $_SESSION['containerId'] = $sigaClient->createContainer($_POST['containerType'], $files);
             $_SESSION['containerFiles'] = array_column($files, 'path', 'name');
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             echo showError($e);
         }
         loadFooter();
@@ -100,14 +100,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             header('Content-Type: application/json');
             echo json_encode($sigaClient->prepareSigning($_POST['certificateHex']));
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             deleteUploadedFiles($_SESSION['containerFiles']);
             echo showError($e);
         }
     } elseif ($action === 'finalize_signing') {
         try {
-            $sigaClient->finalizeSigning($_POST['signatureId'], $_POST['signatureHex'], $_SESSION['containerFiles']);
-        } catch (Exception $e) {
+            $sigaClient->finalizeSigning($_POST['signatureId'], $_POST['signatureHex']);
+        } catch (Throwable $e) {
             echo showError($e);
         }
         deleteUploadedFiles($_SESSION['containerFiles']);

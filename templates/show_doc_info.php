@@ -1,3 +1,8 @@
+<?php
+/**
+ * @var array $files
+ */
+?>
 <div class="row">
 	<div class="col">
 		<div class="card">
